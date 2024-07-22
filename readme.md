@@ -53,6 +53,7 @@ GET api/v0/people
 # Documentation:
 
 A documentation contains operation, parameter, class, property descriptions.
+
 GET api/v0/docs
 ```js
 {
