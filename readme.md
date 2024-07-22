@@ -22,26 +22,16 @@ GET api/v0/people
     ],
     hyperlinks: [
         {
-            type: "Hyperlink",
-            operation: "registerPerson",
-            method: "post",
-            href: "people",
-            body: {name: null, age: null, sex: null},
+            type: "registerPerson",
             relation: "create"
         },
         {
-            type: "Hyperlink",
-            operation: "listPeople",
-            method: "get",
-            href: "people",
+            type: "listPeople",
             query: {page: 1},
             relation: "self"
         },
         {
-            type: "Hyperlink",
-            operation: "listPeople",
-            method: "get",
-            href: "people",
+            type: "listPeople",
             query: {page: 2},
             relation: "next"
         },
@@ -58,7 +48,9 @@ GET api/v0/docs
 ```js
 {
     registerPerson: {
-        type: "Operation",
+        type: "Hyperlink",
+        method: "post",
+        href: "people",
         parameters: {
             name: {
                 type: "Name",
@@ -75,7 +67,9 @@ GET api/v0/docs
         }
     },
     listPeople: {
-        type: "Operation",
+        type: "Hyperlink",
+        method: "get",
+        href: "people",
         parameters: {
             page: {
                 type: "number"
@@ -131,12 +125,6 @@ GET api/v0/view
         label: "Person",
         name: {
             value: ["name"]
-        },
-        age: {
-            value: ["age"]
-        },
-        sex: {
-            value: ["sex"]
         }
     },
     registerPerson: {
