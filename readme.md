@@ -60,9 +60,8 @@ GET api/v0/docs
                 type: "Age",
                 required: true
             },
-            sex: {
-                type: "Sex",
-                label: "Sex"
+            gender: {
+                type: "Gender"
             }
         }
     },
@@ -90,7 +89,7 @@ GET api/v0/docs
             max: 150
         }
     },
-    Sex: {
+    Gender: {
         type: "number",
         range: [1,2,3]
     }
@@ -141,8 +140,8 @@ GET api/v0/view
         input: "number",
         output: "text"
     },
-    Sex: {
-        label: "Sex",
+    Gender: {
+        label: "Gender",
         input: "select",
         output: "text",
         alternatives: [
