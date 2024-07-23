@@ -9,6 +9,8 @@ A resource representation contains data and hyperlink.
 GET api/v0/people
 ```js
 {
+    type: "People",
+    page: 1,
     items: [
         {
             type: "Person",
@@ -47,10 +49,20 @@ A documentation contains operation, parameter, class, property descriptions.
 GET api/v0/docs
 ```js
 {
+    People: {
+        type: "Collection",
+        page: {
+            type: "Paginator",
+            size: 25
+        },
+        items: {
+            type: "Person"
+        }
+    },
     registerPerson: {
         type: "Hyperlink",
         method: "post",
-        href: "people",
+        href: "/api/v0/people",
         parameters: {
             name: {
                 type: "Name",
@@ -63,34 +75,51 @@ GET api/v0/docs
             gender: {
                 type: "Gender"
             }
+        },
+        returns: {
+            201: {
+                type: "Person"
+            }
         }
     },
     listPeople: {
         type: "Hyperlink",
         method: "get",
-        href: "people",
+        href: "/api/v0/people",
         parameters: {
             page: {
-                type: "number"
+                type: "Paginator"
+            }
+        },
+        returns: {
+            200: {
+                type: "People"
             }
         }
     },
+    Person: {
+        type: "Resource",
+        id: {type: "Id"},
+        name: {type: "Name"},
+        age: {type: "Age"},
+        gender: {type: "Gender"}
+    },
     Name: {
-        type: "string",
+        type: "String",
         length: {
             min: 3,
             max: 255
         }
     },
     Age: {
-        type: "number",
+        type: "Number",
         range: {
             min: 18,
             max: 150
         }
     },
     Gender: {
-        type: "number",
+        type: "Number",
         range: [1,2,3]
     }
 }
@@ -108,13 +137,10 @@ GET api/v0/view
         output: {
             type: "table",
             columns: [
-                {
-                    value: ["item","name"],
-                    output: "text",
-                    sortBy: true
-                }
-            ],
-            pagination: 25
+                "name",
+                "age",
+                "gender"
+            ]
         },
     },
     listPeople: {
