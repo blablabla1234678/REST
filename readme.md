@@ -2,6 +2,31 @@
 
 REST API and client with HATEOAS.
 
+### Client usage
+
+```js
+import {Client, Bookmark} from './rest';
+import {View} from './rest-view';
+import viewSettings from './view.json';
+
+async () => {
+    const view = new View({
+        settings: viewSettings,
+        container: "#container"
+    });
+    const client = new Client()
+    const docs = await client.follow(new Bookmark("http://localhost:3000/api/v0/docs"));
+    const main = await client.follow(docs.getMain);
+    let peoplePage = await client.follow(main.hyperlinks.listPeople);
+    view.append(peoplePage);
+    while (peoplePage.relations.next && peoplePage.relations.next.parameters.page.index <= 5){
+        let peoplePage = await client.follow(peoplePage.relations.next)
+        view.append(peoplePage);
+    }
+}
+
+```
+
 ### Resource representation
 
 A resource representation contains data and hyperlink.
@@ -10,17 +35,30 @@ GET api/v0/people
 ```js
 {
     type: "People",
-    page: 1,
+    page: {
+        index: 1,
+        itemsPerPage: 3,
+        count: 250
+    },
     items: [
         {
             type: "Person",
-            name: "Carl Johnson"
+            name: "Carl Johnson",
+            age: 56,
+            gender: 1
         },
         {
             type: "Person",
-            name: "Sunny Morgan"
+            name: "Susanne Morgan",
+            age: 30,
+            gender: 2
         },
-        //...
+        {
+            type: "Person",
+            name: "George Lucas",
+            age: 66,
+            gender: 1
+        }
     ],
     hyperlinks: [
         {
@@ -29,15 +67,14 @@ GET api/v0/people
         },
         {
             type: "listPeople",
-            query: {page: 1},
+            query: {page: {index:1, itemsPerPage:3}},
             relation: "self"
         },
         {
             type: "listPeople",
-            query: {page: 2},
+            query: {page: {index:2, itemsPerPage:3}},
             relation: "next"
-        },
-        //...
+        }
     ]
 }
 ```
@@ -49,15 +86,23 @@ A documentation contains operation, parameter, class, property descriptions.
 GET api/v0/docs
 ```js
 {
+    type: "Documentation",
+    getMain: {
+        type: "Hyperlink",
+        method: "get",
+        href: "/api/v0",
+        returns: {
+            200: {
+                type: "Resource"
+            }
+        }
+    },
     People: {
         type: "Collection",
         page: {
-            type: "Paginator",
-            size: 25
+            type: "Paginator"
         },
-        items: {
-            type: "Person"
-        }
+        items: [{type: "Person"}]
     },
     registerPerson: {
         type: "Hyperlink",
@@ -127,16 +172,17 @@ GET api/v0/docs
 
 # View
 
-A view contains table and form descriptions for the data and hyperlinks.
+A view settings contains table and form descriptions for the data and hyperlinks.
 
-GET api/v0/view
+./view.json
 ```js
 {
     People: {
         label: "People",
         output: {
-            type: "table",
+            type: "Table",
             columns: [
+                "id",
                 "name",
                 "age",
                 "gender"
@@ -153,8 +199,14 @@ GET api/v0/view
         }
     },
     registerPerson: {
+        type: "Form",
         label: "Create Person",
-        submit: "register",
+        inputs: [
+            "name",
+            "age",
+            "gender"
+        ],
+        submit: "register"
     },
     Name: {
         label: "Name",
