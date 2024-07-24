@@ -1,0 +1,9 @@
+{
+    "scripts": {
+        "test": "jest ./tests",
+        "example": "node ./example.js"
+    },
+    "devDependencies": {
+        "jest": "^29.7.0"
+    }
+}

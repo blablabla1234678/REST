@@ -5,22 +5,27 @@ REST API and client with HATEOAS.
 ### Client usage
 
 ```js
-import {Client, Bookmark} from './rest';
-import {View} from './rest-view';
+import Client from '../lib/Client';
+import HtmlView from '../lib/HtmlView';
 import viewSettings from './view.json';
 
 async () => {
-    const view = new View({
+    const view = new HtmlView({
         settings: viewSettings,
         container: "#container"
     });
-    const client = new Client()
-    const docs = await client.follow(new Bookmark("http://localhost:3000/api/v0/docs"));
-    const main = await client.follow(docs.getMain);
-    let peoplePage = await client.follow(main.hyperlinks.listPeople);
+    const client = new Client({
+        baseUri: "http://localhost:3000/api/v0"
+    });
+    const docs = await client.follow(client.bookmark("/docs"));
+    const main = await client.follow(docs.find({operation: "getMain"}));
+    let peoplePage = await client.follow(main.find({operation: "listPeople"});
     view.append(peoplePage);
-    while (peoplePage.relations.next && peoplePage.relations.next.parameters.page.index <= 5){
-        let peoplePage = await client.follow(peoplePage.relations.next)
+    let next;
+    while (next = peoplePage.find({relation: "next"})){
+        if (next.query.page.index > 3)
+            break;
+        let peoplePage = await client.follow(next);
         view.append(peoplePage);
     }
 }
@@ -214,7 +219,7 @@ A view settings contains table and form descriptions for the data and hyperlinks
         output: "text"
     },
     Age: {
-        label: "Age"
+        label: "Age",
         input: "number",
         output: "text"
     },
