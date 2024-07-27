@@ -14,19 +14,15 @@ async () => {
         settings: viewSettings,
         container: "#container"
     });
-    const client = new Client({
-        baseUri: "http://localhost:3000/api/v0"
-    });
-    const docs = await client.follow(client.bookmark("/docs"));
+    const client = new Client();
+    const docs = await client.follow(client.bookmark("http://localhost:3000/api/v0/docs"));
+    client.setContext(docs);
     const main = await client.follow(docs.find({operation: "getMain"}));
-    let peoplePage = await client.follow(main.find({operation: "listPeople"});
-    view.append(peoplePage);
-    let next;
-    while (next = peoplePage.find({relation: "next"})){
-        if (next.query.page.index > 3)
-            break;
-        let peoplePage = await client.follow(next);
-        view.append(peoplePage);
+    let paginator = client.paginate(main.find({operation: "listPeople"}));
+    let paginatedView = view.paginated();
+    while (paginator.hasNext && paginator.page < 3){
+        let pageItems = await paginator.next();
+        paginatedView.append(pageItems);
     }
 }
 

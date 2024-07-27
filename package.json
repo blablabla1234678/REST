@@ -1,9 +1,10 @@
 {
     "scripts": {
-        "test": "jest ./tests",
+        "test": "mocha ./tests",
         "example": "node ./example.js"
     },
     "devDependencies": {
-        "jest": "^29.7.0"
-    }
+        "mocha": "^10.7.0"
+    },
+    "type": "module"
 }
