@@ -26,4 +26,11 @@ describe('RepresentationParser.parse', function (){
             type: "Number"
         }));
     });
+
+    it('should throw an error when the value is required but it is undefined', () => {
+        assert.throws(() => parser.parse({
+            value: null,
+            required: true
+        }));
+    });
 });
