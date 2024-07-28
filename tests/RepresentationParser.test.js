@@ -1,36 +1,32 @@
-import RepresentationParser from '../lib/RepresentationParser.js';
+import {
+    RepresentationParser,
+    TypeConstraint,
+    RequiredConstraint,
+    StringLengthConstraint,
+    ValueConstraint
+} from '../lib/RepresentationParser.js';
 import assert from 'assert';
 
 describe('RepresentationParser.parse', function (){
 
     const parser = new RepresentationParser();
-    it('should be possible to pass a value without passing its type', () => {
-        const document = parser.parse({
+    it('should be possible to parse multiple constraints for the root node', () => {
+        const constraints = parser.parse({
+            type: "String",
+            required: true,
+            length: [1,255],
             value: "abc"
         });
-        assert.equal(document.value, "abc");
-    });
-
-    it('should be possible to pass a value along with a type', () => {
-        const document = parser.parse({
-            value: "abc",
-            type: "String"
-        });
-        assert.equal(document.type, "String");
-        assert.equal(document.value, "abc");
-    });
-
-    it('should throw an error when the type constraint is violated by the value constraint', () => {
-        assert.throws(() => parser.parse({
-            value: "abc",
-            type: "Number"
-        }));
-    });
-
-    it('should throw an error when the value is required but it is undefined', () => {
-        assert.throws(() => parser.parse({
-            value: null,
-            required: true
-        }));
+        assert.equal(constraints.length, 4);
+        assert.ok(constraints[0] instanceof RequiredConstraint);
+        assert.ok(constraints[1] instanceof TypeConstraint);
+        assert.equal(constraints[1].type, "string");
+        assert.ok(constraints[2] instanceof StringLengthConstraint);
+        assert.equal(constraints[2].min, 1);
+        assert.equal(constraints[2].max, 255);
+        assert.ok(constraints[3] instanceof ValueConstraint);
+        assert.equal(constraints[3].value, "abc");
+        for (let constraint of constraints)
+            assert.deepEqual(constraint.selector, []);
     });
 });
