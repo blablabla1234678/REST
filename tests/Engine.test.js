@@ -40,6 +40,17 @@ describe('Engine.process', () => {
                 type: "e"
             }
         },
+        g: {
+            type: "g"
+        },
+        h: {
+            type: "Object",
+            items: {
+                i: {
+                    type: "h"
+                }
+            }
+        },
         String: {
             native: true
         },
@@ -118,6 +129,24 @@ describe('Engine.process', () => {
             [1, ["e", "Object",
                 ["p", ["d", "String"]]
             ]]
+        ]);
+    });
+
+    it('should prevent infinite loops by simple variables', () => {
+        assert.throws(() => engine.process("x", "g", []));
+    });
+
+    it('should not prevent infinite loops by properties', () => {
+        const result = engine.process({
+            items: {
+                i: {}
+            }
+        }, "h", []);
+        assert.deepEqual(result, [
+            "h", "Object",
+            [
+                "i", ["h", "Object"]
+            ]
         ]);
     });
 });
