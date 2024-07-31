@@ -50,15 +50,6 @@ describe('Engine.process', () => {
                     type: "h"
                 }
             }
-        },
-        String: {
-            native: true
-        },
-        Object: {
-            native: true
-        },
-        Array: {
-            native: true
         }
     };
     const engine = new Engine(
