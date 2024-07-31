@@ -21,7 +21,7 @@ describe('Engine.process', () => {
 
     it('should process native types', () => {
         engine.context({});
-        const result = engine.process("x", "String");
+        const result = engine.process("String", "example string");
         assert.deepEqual(result, ["String"]);
     });
 
@@ -31,7 +31,7 @@ describe('Engine.process', () => {
                 type: "String"
             }
         });
-        const result = engine.process("x", "s");
+        const result = engine.process("s", "example string");
         assert.deepEqual(result, ["s", "String"]);
     });
 
@@ -43,7 +43,7 @@ describe('Engine.process', () => {
                 items: {p: {type: "s"}}
             }
         });
-        const result = engine.process({items: {p:"x"}}, "o");
+        const result = engine.process("o", {items: {p:"example string"}});
         assert.deepEqual(result, ["o", "Object", ["p", ["s", "String"]]]);
     });
 
@@ -66,14 +66,14 @@ describe('Engine.process', () => {
                 }
             }
         });
-        const result = engine.process({
+        const result = engine.process("o1", {
             items: {
-                x: "x", 
+                x: "example string", 
                 y: {
-                    items: {p:"y"}
+                    items: {p:"example string"}
                 }
             }
-        }, "o1");
+        });
         assert.deepEqual(result, [
             "o1", "o2", "o3", "Object", 
             ["x", ["s", "String"]],
@@ -103,20 +103,20 @@ describe('Engine.process', () => {
                 }
             }
         });
-        const result = engine.process({
+        const result = engine.process("a", {
             items: [
                 {
                     items: {
-                        p:"y"
+                        p:"example string"
                     }
                 },
                 {
                     items: {
-                        p:"z"
+                        p:"example string"
                     }
                 }
             ]
-        }, "a");
+        });
         assert.deepEqual(result, [
             "a", "Array", 
             [0, ["o", "Object",
@@ -134,7 +134,7 @@ describe('Engine.process', () => {
                 type: "l"
             }
         });
-        assert.throws(() => engine.process("x", "l"));
+        assert.throws(() => engine.process("l", "example string"));
     });
 
     it('should not prevent infinite loops by object properties', () => {
@@ -148,7 +148,7 @@ describe('Engine.process', () => {
                 }
             }
         });
-        const result = engine.process({
+        const result = engine.process("l", {
             items: {
                 p: {
                     items: {
@@ -156,7 +156,7 @@ describe('Engine.process', () => {
                     }
                 }
             }
-        }, "l");
+        });
         assert.deepEqual(result, 
             ["l", "Object", [
                 "p", ["l", "Object", [
