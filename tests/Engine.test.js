@@ -5,17 +5,22 @@ import assert from 'assert';
 
 describe('Engine.process', () => {
     const engine = new Engine({
-        init: function (){
+        initDefinitions: function (){
             return [];
         },
-        task: function ({value, type, definition, result}){
+        addDefinition: function ({value, type, definition, result}){
             result.push(type);
+            return result;
         },
-        nestedInit: function (){
+        mergeDefinitions: function ({value, result}){
+            return result;
+        },
+        initProperty: function (){
             return [];
         },
-        nestedTask: function ({property, result, nestedResult, taskResult}){
+        mergeProperty: function ({property, result, nestedResult}){
             result.push([property, nestedResult]);
+            return result;
         }
     });
 

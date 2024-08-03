@@ -25,6 +25,6 @@ describe('RepresentationValidator.validate', function (){
         const result = validator.validate(doc.opX.response, "example string");
         assert.deepEqual(result, []);
         const result2 = validator.validate(doc.opX.response, 2);
-        assert.deepEqual(result2, [{message: "Value must be a string."}]);
+        assert.deepEqual(result2, [{message: "Value must be a String."}]);
     });
 });
