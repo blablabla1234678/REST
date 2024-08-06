@@ -38,7 +38,7 @@ describe('DocumentationIterator.iterate', () => {
             {selector: [], type: ["o", "Object"]},
             {selector: ["p"], type: ["Object"]},
             {selector: ["p", "q"], type: ["String"]},
-            {selector: ["p", "r"], type: ["Number"]},
+            {selector: ["p", "r"], type: ["Number"]}
         ]);
     });
 
