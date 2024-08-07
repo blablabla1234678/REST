@@ -47,7 +47,7 @@ describe('Client.request', () => {
             request: {
                 type: "Object",
                 method: "get",
-                uri: "/people",
+                uri: "/people?{page}",
                 items: {
                     page: {
                         type: "Number"
@@ -95,8 +95,56 @@ describe('Client.request', () => {
         hyperlinks: {
             self: {
                 type: "main"
+            },
+            people: {
+                type: "listPeople",
+                request: {
+                    items: {
+                        page: 1
+                    }
+                }
             }
         }
+    });
+
+    service.register({method: "get", uri: "/people?page=1"}, {
+        items: [
+            {
+                id: 1,
+                name: "Carl Johnson",
+                age: 56,
+                gender: 1
+            },
+            {
+                id: 2,
+                name: "Susanne Morgan",
+                age: 30,
+                gender: 2
+            }
+        ],
+        hyperlinks: {
+            up: {
+                type: "main"
+            },
+            self: {
+                type: "listPeople",
+                request: {
+                    items: {
+                        page: 1
+                    }
+                }
+            },
+            create: {
+                type: "registerPerson"
+            }
+        }
+    });
+
+    service.register({method: "post", uri: "/people"}, {
+        id: 3,
+        name: "George Lucas",
+        age: 66,
+        gender: 1
     });
 
     it('should load the documentation', async () => {
@@ -106,7 +154,7 @@ describe('Client.request', () => {
         })
     });
 
-    it('should follow a simple hyperlink without parameters', async () => {
+    it('should follow a hyperlink without parameters', async () => {
         const client = new Client(new MockRequestFactory(service));
         await client.documentation("/doc");
         const main = await client.follow({type: "main"});
@@ -115,5 +163,41 @@ describe('Client.request', () => {
         assert.deepEqual(main, main2);
     });
 
+    it('should follow a hyperlink with query parameters', async () => {
+        const client = new Client(new MockRequestFactory(service));
+        await client.documentation("/doc");
+        const main = await client.follow({type: "main"});
+        assert.equal(main.hyperlinks.people.type, "listPeople");
+        const people = await client.follow(main.hyperlinks.people);
+        assert.equal(people.items.length, 2);
+        assert.deepEqual(people.items[0], {
+            id: 1,
+            name: "Carl Johnson",
+            age: 56,
+            gender: 1
+        });
+        assert.deepEqual(people.items[1], {
+            id: 2,
+            name: "Susanne Morgan",
+            age: 30,
+            gender: 2
+        });
+    });
 
+    it('should follow a hyperlink with body parameters', async () => {
+        const client = new Client(new MockRequestFactory(service));
+        await client.documentation("/doc");
+        const main = await client.follow({type: "main"});
+        assert.equal(main.hyperlinks.people.type, "listPeople");
+        const people = await client.follow(main.hyperlinks.people);
+        assert.equal(people.items.length, 2);
+        assert.equal(people.hyperlinks.create.type, "registerPerson");
+        const person = await client.follow(people.hyperlinks.create, {
+            name: "George Lucas",
+            age: 66,
+            gender: 1
+        });
+        assert.equal(person.id, 3);
+        assert.equal(person.name, "George Lucas");
+    });
 });
