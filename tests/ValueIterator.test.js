@@ -53,6 +53,39 @@ describe('DocumentationIterator.iterate', () => {
         ]);
     });
 
+    it('should iterate flat object properties', () => {
+        iterator.context({
+            o: {
+                type: "FlatObject",
+                items: {
+                    p: {
+                        type: "FlatObject",
+                        items: {
+                            q: {type: "String"},
+                            r: {type: "Number"}
+                        }
+                    }
+                }
+            }
+        });
+        const result = [];
+        const value = {
+            p: {
+                q: "example string",
+                r: 123
+            }
+        };
+        iterator.iterate("o", value, (selector, definition, value) => {
+            result.push({selector, type: definition.type, value});
+        });
+        assert.deepEqual(result, [
+            {selector: [], type: ["o", "FlatObject"], value: value},
+            {selector: ["p"], type: ["FlatObject"], value: value.p},
+            {selector: ["p", "q"], type: ["String"], value: "example string"},
+            {selector: ["p", "r"], type: ["Number"], value: 123}
+        ]);
+    });
+
     it('should iterate array items', () => {
         iterator.context({
             a: {
@@ -79,6 +112,38 @@ describe('DocumentationIterator.iterate', () => {
             {selector: [0, 1], type: ["Number"], value: 2},
             {selector: [0, 2], type: ["Number"], value: 3},
             {selector: [1], type: ["aa", "Array"], value: value.items[1]},
+            {selector: [1, 0], type: ["Number"], value: 4},
+            {selector: [1, 1], type: ["Number"], value: 5},
+            {selector: [1, 2], type: ["Number"], value: 6}
+        ]);
+    });
+
+    it('should iterate flat array items', () => {
+        iterator.context({
+            a: {
+                type: "FlatArray",
+                items: {type: "aa"}
+            },
+            aa: {
+                type: "FlatArray",
+                items: {type: "Number"}
+            }
+        });
+        const result = [];
+        const value = [
+            [1,2,3],
+            [4,5,6]
+        ];
+        iterator.iterate("a", value, (selector, definition, value) => {
+            result.push({selector, type: definition.type, value});
+        });
+        assert.deepEqual(result, [
+            {selector: [], type: ["a", "FlatArray"], value: value},
+            {selector: [0], type: ["aa", "FlatArray"], value: value[0]},
+            {selector: [0, 0], type: ["Number"], value: 1},
+            {selector: [0, 1], type: ["Number"], value: 2},
+            {selector: [0, 2], type: ["Number"], value: 3},
+            {selector: [1], type: ["aa", "FlatArray"], value: value[1]},
             {selector: [1, 0], type: ["Number"], value: 4},
             {selector: [1, 1], type: ["Number"], value: 5},
             {selector: [1, 2], type: ["Number"], value: 6}

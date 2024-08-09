@@ -9,21 +9,18 @@ describe('Client.request', () => {
     service.register({method: "get", uri: "/doc"}, {
         main: {
             type: "Hyperlink",
-            request: {
-                type: "Object",
-                method: "get",
-                uri: "/"
-            },
+            method: "get",
+            uri: "/",
             response: {
                 type: "Object"
             }
         },
         registerPerson: {
             type: "Hyperlink",
+            method: "post",
+            uri: "/people",
             request: {
-                type: "Object",
-                method: "post",
-                uri: "/people",
+                type: "FlatObject",
                 items: {
                     name: {
                         type: "Name",
@@ -44,10 +41,10 @@ describe('Client.request', () => {
         },
         listPeople: {
             type: "Hyperlink",
+            method: "get",
+            uri: "/people?{page}",
             request: {
-                type: "Object",
-                method: "get",
-                uri: "/people?{page}",
+                type: "FlatObject",
                 items: {
                     page: {
                         type: "Number"
@@ -99,9 +96,7 @@ describe('Client.request', () => {
             people: {
                 type: "listPeople",
                 request: {
-                    items: {
-                        page: 1
-                    }
+                    page: 1
                 }
             }
         }
@@ -129,9 +124,7 @@ describe('Client.request', () => {
             self: {
                 type: "listPeople",
                 request: {
-                    items: {
-                        page: 1
-                    }
+                    page: 1
                 }
             },
             create: {
