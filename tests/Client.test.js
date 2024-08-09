@@ -1,6 +1,6 @@
 import Client from '../lib/Client.js';
-import MockRequestFactory from '../lib/MockHttpRequestFactory.js';
-import MockService from '../lib/MockService.js';
+import MockRequestFactory from './MockHttpRequestFactory.js';
+import MockService from './MockService.js';
 import assert from 'assert';
 
 describe('Client.request', () => {
